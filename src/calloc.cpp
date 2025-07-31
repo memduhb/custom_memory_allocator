@@ -4,10 +4,20 @@
 #include <cstring>
 #include <climits>
 
+/* Custom Calloc function
+    - Allocates memory for arrays and zero-initializes all bytes
+    - Implements integer overflow protection for size calculations
+    - Handles edge cases: zero elements or zero size returns nullptr
+    - Uses my_malloc_internal for allocation, then memset for initialization
+    - Thread-safe with mutex protection
+    - Returns pointer to zero-initialized memory
+*/
+
 extern std::mutex heap_mutex;
 
 void* my_calloc(std::size_t num, std::size_t size) {
     std::lock_guard<std::mutex> lock(heap_mutex);
+
     if (num == 0 || size == 0) return nullptr;
 
     size_t total = num * size;
@@ -16,15 +26,11 @@ void* my_calloc(std::size_t num, std::size_t size) {
         return nullptr;
     }
 
-    void* memory = request_memory_from_os(total);
+    void* memory = my_malloc_internal(total);
     if (!memory) return nullptr;
 
-    BlockHeader* header = static_cast<BlockHeader*>(memory);
-    header->size = total;
-    header->is_free = false;
-    header->next = nullptr;
-
-    void* usable_ptr = static_cast<void*>(header + 1);
-    std::memset(usable_ptr, 0, total);
-    return usable_ptr;
+    std::memset(memory, 0, total);
+    return memory;
 }
+
+

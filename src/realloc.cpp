@@ -2,6 +2,17 @@
 #include <mutex>
 #include <cstring>
 
+/* Custom Realloc function
+    - Resizes memory blocks with intelligent optimization
+    - Null pointer: behaves like malloc
+    - Zero size: behaves like free (deallocates)
+    - Smaller size: reuses same block (no data movement)
+    - Larger size: allocates new block and copies data
+    - Same size: returns original pointer (no-op)
+    - Thread-safe with mutex protection
+    - Preserves existing data during resize operations
+*/
+
 extern std::mutex heap_mutex;
 
 void* my_realloc(void* ptr, std::size_t size) {

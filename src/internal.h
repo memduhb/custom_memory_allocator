@@ -9,6 +9,9 @@ struct BlockHeader {
     BlockHeader* next;
 };
 
+// Global pointer to the head of the free list
+extern BlockHeader* free_list;
+
 void* my_malloc_internal(size_t size);
 void my_free_internal(void* ptr);
 void* request_memory_from_os(size_t size);
