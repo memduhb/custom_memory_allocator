@@ -2,18 +2,21 @@
 #include <mutex>
 #include <iostream>
 
-/* Custom Malloc function
-    - Implements memory allocation with free list reuse
-    - First searches free list for suitable blocks (best-fit)
-    - Requests new memory from OS via mmap if no free blocks available
-    - Uses block headers to track size, free status, and next pointer
-    - Thread-safe with mutex protection
-    - Returns pointer to usable memory area (after header)
-*/
+/**
+ * Custom memory allocation function with free list reuse.
+ * Searches free list first, then requests from OS if needed.
+ * Thread-safe with mutex protection.
+ */
 
 std::mutex heap_mutex;
 BlockHeader* free_list = nullptr; // Global pointer to the head of the free list
 
+/**
+ * Internal malloc function that implements the allocation logic.
+ * Searches free list for suitable blocks, requests from OS if none found.
+ * @param size Number of bytes to allocate
+ * @return Pointer to allocated memory, or nullptr if allocation fails
+ */
 void* my_malloc_internal(size_t size) {
     // First check if there is a free block in the free list
     BlockHeader* prev = nullptr;
@@ -55,6 +58,12 @@ void* my_malloc_internal(size_t size) {
     return static_cast<void*>(header + 1);
 }
 
+/**
+ * Public interface for memory allocation.
+ * Thread-safe wrapper around my_malloc_internal.
+ * @param size Number of bytes to allocate
+ * @return Pointer to allocated memory, or nullptr if allocation fails
+ */
 void* my_malloc(std::size_t size) {
     std::lock_guard<std::mutex> lock(heap_mutex);
     return my_malloc_internal(size);

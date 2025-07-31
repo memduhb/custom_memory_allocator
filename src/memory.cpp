@@ -3,18 +3,26 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-/* Request memory from the OS
-    - Allocates memory using mmap for the custom allocator.
-    - Aligns the size to the nearest page boundary.
-    - Returns a pointer to the allocated memory.
-    - The request_memory_from_os function is the internal interface for memory allocation.
-*/
+/**
+ * OS-level memory management functions.
+ * Handles memory requests from the operating system using mmap.
+ */
 
+/**
+ * Handles system errors by printing error message and exiting.
+ * @param msg Error message to display
+ */
 void handle_error(const char* msg) {
     perror(msg); 
     exit(255);
 }
 
+/**
+ * Requests memory from the operating system using mmap.
+ * Aligns size to page boundaries for efficiency.
+ * @param size Number of bytes to request (will be page-aligned)
+ * @return Pointer to allocated memory, or MAP_FAILED on error
+ */
 void* request_memory_from_os(std::size_t size) {
     size_t page_size = getpagesize();
     size_t aligned_size = ((size + sizeof(BlockHeader) + page_size - 1) / page_size) * page_size;

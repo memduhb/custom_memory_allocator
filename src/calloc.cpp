@@ -4,17 +4,20 @@
 #include <cstring>
 #include <climits>
 
-/* Custom Calloc function
-    - Allocates memory for arrays and zero-initializes all bytes
-    - Implements integer overflow protection for size calculations
-    - Handles edge cases: zero elements or zero size returns nullptr
-    - Uses my_malloc_internal for allocation, then memset for initialization
-    - Thread-safe with mutex protection
-    - Returns pointer to zero-initialized memory
-*/
+/**
+ * Custom calloc function for array allocation with zero-initialization.
+ * Implements overflow protection and handles edge cases.
+ * Thread-safe with mutex protection.
+ */
 
 extern std::mutex heap_mutex;
 
+/**
+ * Allocates memory for an array and initializes all bytes to zero.
+ * @param num Number of elements to allocate
+ * @param size Size of each element in bytes
+ * @return Pointer to zero-initialized memory, or nullptr if allocation fails
+ */
 void* my_calloc(std::size_t num, std::size_t size) {
     std::lock_guard<std::mutex> lock(heap_mutex);
 

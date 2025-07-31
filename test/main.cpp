@@ -1,3 +1,11 @@
+/**
+ * @file main.cpp
+ * @brief Comprehensive test suite for custom memory allocator
+ * 
+ * Tests all allocation functions with various scenarios including
+ * edge cases, memory reuse, and error conditions.
+ */
+
 #include <iostream>
 #include <vector>
 #include <cstring>     // for memset, memcpy
@@ -9,10 +17,11 @@ void  my_free(void* ptr);
 void* my_calloc(size_t num, size_t size);
 void* my_realloc(void* ptr, size_t size);
 
+// === TEST FUNCTIONS ===
 
-// === TESTS ===
-
-// TEST MALLOC
+/**
+ * Tests basic malloc functionality and memory reuse.
+ */
 void test_my_malloc() {
     std::cout << "[TEST] my_malloc\n";
     void* ptr = my_malloc(128);
@@ -27,7 +36,9 @@ void test_my_malloc() {
     std::cout << "\n";
 }
 
-// TEST CALLOC
+/**
+ * Tests calloc functionality including zero-initialization and overflow protection.
+ */
 void test_my_calloc() {
     std::cout << "[TEST] my_calloc\n";
 
@@ -57,7 +68,9 @@ void test_my_calloc() {
     std::cout << "\n";
 }
 
-// TEST REALLOC
+/**
+ * Tests realloc functionality for growing and shrinking memory blocks.
+ */
 void test_my_realloc() {
     std::cout << "[TEST] my_realloc\n";
 
@@ -80,7 +93,9 @@ void test_my_realloc() {
     std::cout << "Freed after realloc.\n\n";
 }
 
-// TEST REALLOC with size 0
+/**
+ * Tests realloc behavior when size is zero (should free memory).
+ */
 void test_realloc_zero_size() {
     std::cout << "[TEST] realloc with size 0\n";
     void* ptr = my_malloc(32);
@@ -90,7 +105,9 @@ void test_realloc_zero_size() {
     std::cout << "\n";
 }
 
-// MASS ALLOCATION TEST
+/**
+ * Tests mass allocation and deallocation to verify memory reuse.
+ */
 void test_mass_allocation() {
     std::cout << "[TEST] mass allocation\n";
     std::vector<void*> ptrs;
@@ -106,7 +123,10 @@ void test_mass_allocation() {
     std::cout << "Mass allocation/deallocation complete.\n\n";
 }
 
-// OPTIONAL: Double free test (should crash or be no-op if not protected)
+/**
+ * Tests double-free protection (commented out by default).
+ * Uncomment to test double-free detection.
+ */
 void test_double_free() {
     std::cout << "[TEST] double free (undefined behavior unless handled)\n";
     void* ptr = my_malloc(64);
@@ -115,7 +135,10 @@ void test_double_free() {
     std::cout << "Double free test executed (no check in place).\n\n";
 }
 
-// MASTER TEST RUNNER
+/**
+ * Master test runner that executes all test functions.
+ * Runs comprehensive test suite for the custom allocator.
+ */
 void test_allocation_suite() {
     std::cout << "\n🔬 Running Full Test Suite\n";
     test_my_malloc();

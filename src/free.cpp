@@ -3,17 +3,18 @@
 #include <cstdint>
 #include <iostream>
 
-/* Custom Free function
-    - Implements memory deallocation with double-free protection
-    - Adds freed blocks to free list (LIFO - Last In, First Out)
-    - Detects and prevents double-free attempts
-    - Uses block headers to track allocation status
-    - Thread-safe with mutex protection
-    - Null pointer handling (no-op)
-*/
+/**
+ * Custom memory deallocation function with double-free protection.
+ * Adds freed blocks to free list (LIFO) for memory reuse.
+ * Thread-safe with mutex protection.
+ */
 
 extern std::mutex heap_mutex;
 
+/**
+ * Internal free function that handles the actual deallocation logic.
+ * @param ptr Pointer to memory block to free
+ */
 void my_free_internal(void* ptr) {
     
     if (!ptr) return;
@@ -32,6 +33,11 @@ void my_free_internal(void* ptr) {
     free_list = header;
 }
 
+/**
+ * Public interface for memory deallocation.
+ * Thread-safe wrapper around my_free_internal.
+ * @param ptr Pointer to memory block to free
+ */
 void my_free(void* ptr) {
     std::lock_guard<std::mutex> lock(heap_mutex);
     my_free_internal(ptr);
